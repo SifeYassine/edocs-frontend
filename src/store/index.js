@@ -30,6 +30,10 @@ export default createStore({
         const { data } = await axios.post("/auth/register", credentials);
       } catch (error) {
         console.error(error);
+        if (error.response) {
+          // Throw the response error so that it can be caught in the component
+          throw error.response;
+        }
       }
     },
 
@@ -43,6 +47,10 @@ export default createStore({
         });
       } catch (error) {
         console.error(error);
+        if (error.response) {
+          // Throw the response error so that it can be caught in the component
+          throw error.response;
+        }
       }
     },
 

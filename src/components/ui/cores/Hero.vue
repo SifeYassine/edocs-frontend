@@ -25,54 +25,29 @@
       </div>
     </section>
 
-    <h1 class="text-5xl text-gray-900 font-bold mb-6">Core Features</h1>
+    <h1 class="text-5xl text-gray-900 font-bold mb-6">Supported Formats</h1>
     <section
       id="features"
       class="w-[70%] mx-auto rounded-2xl p-5 grid gap-10 lg:grid-cols-3"
     >
-      <article
-        class="flex flex-col gap-3 items-center p-[20px] rounded-[20px] z-[1000] bg-[white]"
-      >
-        <img
-          src="@/assets/images/hero.png"
-          alt=""
-          class="w-[100px] rounded-full"
-        />
-        <h1 class="text-2xl text-gray-900">Find Books Near You</h1>
-        <p class="text-gray-700">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos
-          molestias corrupti debitis, esse.
-        </p>
+      <article class="flex flex-col items-center">
+        <img src="@/assets/images/pdf.png" alt="" class="w-[100px]" />
+        <h1 class="text-2xl text-gray-900 ml-5">PDF</h1>
       </article>
-      <article
-        class="flex flex-col gap-3 items-center p-[20px] rounded-[20px] z-[1000] bg-[white]"
-      >
-        <img
-          src="@/assets/images/hero.png"
-          alt=""
-          class="w-[100px] rounded-full"
-        />
-        <h1 class="text-2xl text-gray-900">Post Books You Want to Exchange</h1>
-        <p class="text-gray-700">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos
-          molestias corrupti debitis, esse.
-        </p>
+
+      <article class="flex flex-col items-center">
+        <img src="@/assets/images/docx.png" alt="" class="w-[100px]" />
+        <h1 class="text-2xl text-gray-900 ml-5">DOCX</h1>
       </article>
-      <article
-        class="flex flex-col gap-3 items-center p-[20px] rounded-[20px] z-[1000] bg-[white]"
-      >
-        <img
-          src="@/assets/images/hero.png"
-          alt=""
-          class="w-[100px] rounded-full"
-        />
-        <h1 class="text-2xl text-gray-900">
-          Request Books you Wish to Receive
-        </h1>
-        <p class="text-gray-700">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos
-          molestias corrupti debitis, esse.
-        </p>
+
+      <article class="flex flex-col items-center">
+        <img src="@/assets/images/xlsx.png" alt="" class="w-[100px]" />
+        <h1 class="text-2xl text-gray-900 ml-5">XLSX</h1>
+      </article>
+
+      <article class="flex flex-col items-center">
+        <img src="@/assets/images/pptx.png" alt="" class="w-[100px]" />
+        <h1 class="text-2xl text-gray-900 ml-5">PPTX</h1>
       </article>
     </section>
 
@@ -146,9 +121,3 @@ export default {
   name: "Hero",
 };
 </script>
-
-<style scoped>
-article {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-</style>

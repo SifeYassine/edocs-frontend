@@ -1,5 +1,13 @@
 <template>
   <div class="flex flex-col items-center justify-center mt-[8vh] font-sans">
+    <vs-alert
+      v-model="active"
+      :progress="progress"
+      color="danger"
+      class="alert"
+    >
+      <template #title> Wrong Username or/and Password </template>
+    </vs-alert>
     <form
       @submit.prevent="submitForm"
       class="form bg-white p-5 pb-8 rounded-[20px] w-full max-w-md"
@@ -58,7 +66,7 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
@@ -66,6 +74,10 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
+
+    const active = ref(false);
+    const time = ref(2000);
+    const progress = ref(0);
 
     // User credentials for login
     const userCredentials = ref({
@@ -81,18 +93,39 @@ export default {
     async function submitForm() {
       try {
         await store.dispatch("login", userCredentials.value);
-        router.push("/book_posts");
+
+        router.push("/");
       } catch (error) {
-        console.error("Login failed:", error.response.data);
-        alert("Login failed. Please try again.");
+        console.error(error);
+        // Handle login failure (Wrong credentials)
+        if (error.status === 400) {
+          active.value = true; // Activate alert
+          console.error("Login failed:", error.data.message);
+        }
       }
     }
+
+    watch(active, (val) => {
+      if (val) {
+        const interval = setInterval(() => {
+          progress.value++;
+        }, time.value / 100);
+
+        setTimeout(() => {
+          active.value = false;
+          clearInterval(interval);
+          progress.value = 0;
+        }, time.value);
+      }
+    });
 
     return {
       userCredentials,
       submitForm,
       inputType,
       hasVisiblePassword,
+      active,
+      progress,
     };
   },
 };
@@ -101,5 +134,13 @@ export default {
 <style scoped>
 .form {
   box-shadow: 2px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.alert {
+  border-radius: 10px;
+  width: fit-content;
+  height: 65px;
+  margin-bottom: 20px;
+  padding-top: 5px;
 }
 </style>

@@ -1,5 +1,19 @@
 <template>
   <div class="flex flex-col items-center justify-center mt-[8vh] font-sans">
+    <vs-alert
+      v-model="active"
+      :progress="progress"
+      color="danger"
+      class="alert"
+    >
+      <template #title>
+        <div>
+          <p v-for="message in alertMessages" :key="message">
+            {{ message }}
+          </p>
+        </div>
+      </template>
+    </vs-alert>
     <form
       @submit.prevent="submitForm"
       class="form bg-white p-5 pb-8 rounded-[20px] w-full max-w-md"
@@ -8,7 +22,7 @@
         <img src="@/assets/logos/logo.png" class="w-[250px]" alt="Logo" />
         <h1 class="text-3xl text-gray-700 font-[500] mt-3 mb-6">Register</h1>
         <p class="text-gray-700 text-base">
-          Welcom to BookMates, Start by creating an account
+          Welcom to eDocs, Start by creating an account
         </p>
       </div>
 
@@ -75,9 +89,12 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    const active = ref(false);
 
-    // User credentials including location info
+    const active = ref(false);
+    const time = ref(4000);
+    const progress = ref(0);
+    const alertMessages = ref([]);
+
     const userCredentials = ref({
       username: "",
       email: "",
@@ -92,19 +109,41 @@ export default {
     async function submitForm() {
       try {
         await store.dispatch("register", userCredentials.value);
-        active.value = true;
+
         router.push("/login");
       } catch (error) {
-        console.error("Registration failed:", error.response.data);
-        alert("Registration failed. Please try again.");
+        console.error(error);
+        // Handle registeration failure (Invalid credentials)
+        if (error.status === 400) {
+          active.value = true;
+          // Flatten all error messages in the errors array returned from the object (array of arrays) into a single array
+          alertMessages.value = Object.values(error.data.errors).flat();
+        }
       }
     }
+
+    watch(active, (val) => {
+      if (val) {
+        const interval = setInterval(() => {
+          progress.value++;
+        }, time.value / 100);
+
+        setTimeout(() => {
+          active.value = false;
+          clearInterval(interval);
+          progress.value = 0;
+        }, time.value);
+      }
+    });
 
     return {
       userCredentials,
       submitForm,
       inputType,
       hasVisiblePassword,
+      active,
+      progress,
+      alertMessages,
     };
   },
 };
@@ -113,5 +152,16 @@ export default {
 <style scoped>
 .form {
   box-shadow: 2px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 10px;
+  width: fit-content;
+  padding: 10px;
+  margin-bottom: 20px;
+  min-height: auto;
 }
 </style>
