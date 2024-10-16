@@ -4,16 +4,14 @@ import store from "@/store"; // Import the Vuex store to check authentication st
 import Home from "@/components/pages/home/Home.vue";
 import Login from "@/components/pages/auth/LoginForm.vue";
 import Register from "@/components/pages/auth/RegisterForm.vue";
-// import Genres from "@/components/pages/genres/Genres.vue";
-// import BookPosts from "@/components/pages/bookposts/BookPosts.vue";
+import Categories from "@/components/pages/categories/Categories.vue";
 import NotFound from "@/components/pages/notFound/NotFound.vue";
 
 const routes = [
   { path: "/", component: Home },
   { path: "/login", component: Login },
   { path: "/register", component: Register },
-  // { path: "/genres", component: Genres },
-  // { path: "/book_posts", component: BookPosts },
+  { path: "/categories", component: Categories },
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",

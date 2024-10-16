@@ -16,7 +16,7 @@
     <!-- login, register and logout buttons -->
     <template #right>
       <vs-button v-if="isAuthenticated">
-        <router-link to="/book_posts" class="text-white"> Explore </router-link>
+        <router-link to="/categories" class="text-white"> Explore </router-link>
       </vs-button>
       <vs-button type="flat" v-if="!isAuthenticated">
         <router-link to="/login" class="text-white"> Login </router-link>
