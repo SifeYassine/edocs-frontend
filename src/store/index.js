@@ -3,21 +3,31 @@ import axios from "@/api/axios";
 
 export default createStore({
   state: {
-    token: localStorage.getItem("token") || "",
-    user_id: null,
-    role_id: null,
+    // Category modal state
+    categoryModal: {
+      isOpen: false,
+      mode: null, // 'add' or 'edit'
+      category: { name: "" }, // empty category
+    },
+
+    // Authentication (token & Ids) state
+    tokenIds: {
+      token: localStorage.getItem("token") || "",
+      user_id: null,
+      role_id: null,
+    },
+
     searchQuery: "",
+
     categories: [],
-    editModalState: false,
-    selectedCategory: null,
   },
   mutations: {
     // Setters
     setTokenIds(state, { token, user_id, role_id }) {
-      state.token = token;
+      state.tokenIds.token = token;
       localStorage.setItem("token", token);
-      state.user_id = user_id;
-      state.role_id = role_id;
+      state.tokenIds.user_id = user_id;
+      state.tokenIds.role_id = role_id;
     },
 
     setSearchQuery(state, query) {
@@ -28,20 +38,18 @@ export default createStore({
       state.categories = categories;
     },
 
-    setEditModalState(state, isOpen) {
-      state.editModalState = isOpen;
-    },
-
-    setSelectedCategory(state, category) {
-      state.selectedCategory = category;
+    setCategoryModal(state, { isOpen, mode, category }) {
+      state.categoryModal.isOpen = isOpen;
+      state.categoryModal.mode = mode;
+      state.categoryModal.category = category;
     },
 
     // Clear
     clearTokenIds(state) {
-      state.token = "";
+      state.tokenIds.token = "";
       localStorage.removeItem("token");
-      state.user_id = null;
-      state.role_id = null;
+      state.tokenIds.user_id = null;
+      state.tokenIds.role_id = null;
     },
 
     clearCategories(state) {
@@ -85,7 +93,7 @@ export default createStore({
         const { data } = await axios.get("/users/get_profile");
 
         commit("setTokenIds", {
-          token: state.token, // Keep the existing token
+          token: state.tokenIds.token, // Keep the existing token
           user_id: data.user.id,
           role_id: data.user.role_id,
         });
@@ -105,13 +113,21 @@ export default createStore({
       commit("setSearchQuery", query);
     },
 
-    openEditModal({ commit }, category) {
-      commit("setSelectedCategory", category);
-      commit("setEditModalState", true);
+    // Category modal state triggers
+    openCategoryModal({ commit }, { mode, category }) {
+      commit("setCategoryModal", {
+        isOpen: true,
+        mode,
+        category: category || { name: "" }, // empty category for 'add' mode
+      });
     },
 
-    closeEditModal({ commit }) {
-      commit("setEditModalState", false);
+    closeCategoryModal({ commit }) {
+      commit("setCategoryModal", {
+        isOpen: false,
+        mode: null,
+        category: { name: "" },
+      });
     },
 
     // Categories CRUD
@@ -121,7 +137,7 @@ export default createStore({
 
         commit("setCategories", data.categories);
       } catch (error) {
-        console.error(error);
+        console.error("Failed to fetch categories:", error);
       }
     },
 
@@ -129,7 +145,7 @@ export default createStore({
       try {
         const { data } = await axios.post("/categories/create", category);
 
-        // Update the state with the newly added category
+        // Add the newly created category to the state by appending it to the existing categories
         commit("setCategories", [...state.categories, data.category]);
       } catch (error) {
         console.error("Failed to add category:", error);
@@ -140,13 +156,12 @@ export default createStore({
       try {
         await axios.put(`/categories/update/${category.id}`, category);
 
-        // Update the state with the newly edited category
-        commit(
-          "setCategories",
-          state.categories.map((categ) =>
-            categ.id === category.id ? category : categ
-          )
+        // Update the state with the edited category by replacing the matching category in the array
+        const editedCategories = state.categories.map((categ) =>
+          // Replace the category whose Id matches with the updated category, otherwise keep the existing category
+          categ.id === category.id ? category : categ
         );
+        commit("setCategories", editedCategories);
       } catch (error) {
         console.error("Failed to edit category:", error);
       }
@@ -156,11 +171,13 @@ export default createStore({
       try {
         await axios.delete(`/categories/delete/${categoryId}`);
 
-        // Update the state with the newly deleted category
-        commit(
-          "setCategories",
-          state.categories.filter((category) => category.id !== categoryId)
+        // Remove the deleted category from the state by filtering it out
+        const deletedCategories = state.categories.filter(
+          (category) =>
+            // Only keep categories whose Ids don't match the deleted category Id
+            category.id !== categoryId
         );
+        commit("setCategories", deletedCategories);
       } catch (error) {
         console.error("Failed to delete category:", error);
       }
@@ -169,12 +186,10 @@ export default createStore({
 
   // Getters
   getters: {
-    userId: (state) => state.user_id,
-    roleId: (state) => state.role_id,
-    isAdmin: (state) => state.role_id === 1,
-    isAuthenticated: (state) => state.token,
+    isAuthenticated: (state) => state.tokenIds,
+    isAdmin: (state) => state.tokenIds.role_id === 1,
     getCategories: (state) => state.categories,
-    isEditModalOpen: (state) => state.editModalState,
-    getSelectedCategory: (state) => state.selectedCategory,
+    getCategoryModal: (state) => state.categoryModal,
+    getSearchQuery: (state) => state.searchQuery,
   },
 });

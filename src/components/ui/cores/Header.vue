@@ -38,7 +38,7 @@ export default {
     const active = ref("guide");
     const store = useStore();
     const router = useRouter();
-    const isAuthenticated = computed(() => store.getters.isAuthenticated);
+    const isAuthenticated = computed(() => store.getters.isAuthenticated.token);
     const isAdmin = computed(() => store.getters.isAdmin);
 
     function logout() {

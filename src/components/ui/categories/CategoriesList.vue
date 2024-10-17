@@ -1,56 +1,66 @@
 <template>
-  <ul
-    class="categoriesList w-3/4 ml-[22%] mt-[2%] rounded-2xl z-[1000] bg-white grid grid-cols-6 gap-y-2.5 list-none p-[50px]"
-  >
-    <li
-      v-for="category in filteredCategories"
-      :key="category.id"
-      class="font-bold p-1.5 relative"
+  <div>
+    <CategoryFormModal />
+    <ul
+      class="categoriesList w-3/4 ml-[22%] mt-[2%] rounded-2xl z-[1000] bg-white grid grid-cols-6 gap-y-2.5 list-none p-[50px]"
     >
-      <div @contextmenu.prevent="showContextMenu($event, category)">
-        <vs-button
-          class="w-[85%]"
-          color="primary"
-          @click="onCategoryClick(category)"
-        >
-          <i class="bx bx-tag text-[15px]" />
-          <p class="text-[15px] ml-[5px]">{{ category.name }}</p>
-        </vs-button>
-      </div>
-      <div
-        v-if="contextMenu.visible && contextMenu.categoryId === category.id"
-        class="context-menu"
-        :style="{ top: contextMenu.top + 'px', left: contextMenu.left + 'px' }"
+      <li
+        v-for="category in filteredCategories"
+        :key="category.id"
+        class="font-bold p-1.5 relative"
       >
-        <div
-          @click="openEditModal(category)"
-          class="context-menu-item edit-item"
-        >
-          Edit
+        <div @contextmenu.prevent="showContextMenu($event, category)">
+          <vs-button
+            class="w-[85%]"
+            color="primary"
+            @click="onCategoryClick(category)"
+          >
+            <i class="bx bx-tag text-[15px]" />
+            <p class="text-[15px] ml-[5px]">{{ category.name }}</p>
+          </vs-button>
         </div>
         <div
-          @click="deleteCategory(category.id)"
-          class="context-menu-item delete-item"
+          v-if="contextMenu.visible && contextMenu.categoryId === category.id"
+          class="context-menu"
+          :style="{
+            top: contextMenu.top + 'px',
+            left: contextMenu.left + 'px',
+          }"
         >
-          Delete
+          <div
+            @click="openEditModal(category)"
+            class="context-menu-item edit-item"
+          >
+            Edit
+          </div>
+          <div
+            @click="deleteCategory(category.id)"
+            class="context-menu-item delete-item"
+          >
+            Delete
+          </div>
         </div>
-      </div>
-    </li>
-  </ul>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import CategoryFormModal from "./CategoryFormModal.vue";
 
 export default {
+  components: {
+    CategoryFormModal,
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
 
     const categories = computed(() => store.getters.getCategories);
-    const searchQuery = computed(() => store.state.searchQuery);
+    const searchQuery = computed(() => store.getters.getSearchQuery);
     const contextMenu = ref({
       visible: false,
       top: 0,
@@ -58,8 +68,12 @@ export default {
       categoryId: null,
     });
 
+    // Edit Modal trigger
     function openEditModal(category) {
-      store.dispatch("openEditModal", category);
+      store.dispatch("openCategoryModal", {
+        mode: "edit",
+        category,
+      });
     }
 
     async function fetchCategories() {
@@ -109,7 +123,16 @@ export default {
       contextMenu.value.visible = false;
     }
 
+    async function getMyProfile() {
+      try {
+        await store.dispatch("getMyProfile");
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+      }
+    }
+
     onMounted(() => {
+      getMyProfile();
       fetchCategories();
       document.addEventListener("click", hideContextMenu);
     });

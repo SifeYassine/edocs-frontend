@@ -31,7 +31,7 @@ router.beforeEach((to, from, next) => {
   // Check if the current route is public or requires authentication (protected)
   const protectedPages = !publicPages.includes(to.path);
 
-  const isAuthenticated = store.getters.isAuthenticated;
+  const isAuthenticated = store.getters.isAuthenticated.token;
 
   // If the route requires authentication and user is not authenticated, redirect to /register
   if (protectedPages && !isAuthenticated) {
