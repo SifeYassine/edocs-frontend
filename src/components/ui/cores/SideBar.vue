@@ -7,17 +7,26 @@
         </template>
         Home
       </vs-sidebar-item>
+
       <vs-sidebar-item id="mydocs" to="/my_docs">
         <template #icon>
-          <i class="bx bx-grid-alt" />
+          <i class="bx bx-file-blank" />
         </template>
         My Docs
       </vs-sidebar-item>
+
       <vs-sidebar-item id="categories" to="/categories">
         <template #icon>
           <i class="bx bx-tag" />
         </template>
         Categories
+      </vs-sidebar-item>
+
+      <vs-sidebar-item @click="logout" class="logout">
+        <template #icon>
+          <i class="bx bx-power-off" />
+        </template>
+        Logout
       </vs-sidebar-item>
     </div>
   </vs-sidebar>
@@ -25,20 +34,33 @@
 
 <script>
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { useStore } from "vuex";
+import { useRoute, useRouter } from "vue-router";
 
 export default {
   setup() {
     const active = ref("my_docs");
+    const store = useStore();
     const route = useRoute();
+    const router = useRouter();
 
     const path = route.path;
     if (path) {
       active.value = path.split("/")[1];
     }
 
+    async function logout() {
+      try {
+        await store.dispatch("logout");
+        router.push("/");
+      } catch (error) {
+        console.error("Failed to logout:", error);
+      }
+    }
+
     return {
       active,
+      logout,
     };
   },
 };

@@ -8,6 +8,8 @@ export default createStore({
     role_id: null,
     searchQuery: "",
     categories: [],
+    editModalState: false,
+    selectedCategory: null,
   },
   mutations: {
     // Setters
@@ -24,6 +26,14 @@ export default createStore({
 
     setCategories(state, categories) {
       state.categories = categories;
+    },
+
+    setEditModalState(state, isOpen) {
+      state.editModalState = isOpen;
+    },
+
+    setSelectedCategory(state, category) {
+      state.selectedCategory = category;
     },
 
     // Clear
@@ -55,6 +65,7 @@ export default createStore({
     async login({ commit }, credentials) {
       try {
         const { data } = await axios.post("/auth/login", credentials);
+
         commit("setTokenIds", {
           token: data.access_token,
           user_id: data.user.id,
@@ -69,8 +80,23 @@ export default createStore({
       }
     },
 
+    async getMyProfile({ commit, state }) {
+      try {
+        const { data } = await axios.get("/users/get_profile");
+
+        commit("setTokenIds", {
+          token: state.token, // Keep the existing token
+          user_id: data.user.id,
+          role_id: data.user.role_id,
+        });
+      } catch (error) {
+        console.error("Failed to get profile:", error);
+      }
+    },
+
     async logout({ commit }) {
       await axios.post("/auth/logout");
+
       commit("clearTokenIds");
       commit("clearCategories");
     },
@@ -79,15 +105,64 @@ export default createStore({
       commit("setSearchQuery", query);
     },
 
+    openEditModal({ commit }, category) {
+      commit("setSelectedCategory", category);
+      commit("setEditModalState", true);
+    },
+
+    closeEditModal({ commit }) {
+      commit("setEditModalState", false);
+    },
+
     // Categories CRUD
     async fetchCategories({ commit }) {
       try {
         const { data } = await axios.get("/categories/index");
-        commit("setCategories", data.categories);
 
-        console.log("categories", data.categories);
+        commit("setCategories", data.categories);
       } catch (error) {
         console.error(error);
+      }
+    },
+
+    async addCategory({ commit, state }, category) {
+      try {
+        const { data } = await axios.post("/categories/create", category);
+
+        // Update the state with the newly added category
+        commit("setCategories", [...state.categories, data.category]);
+      } catch (error) {
+        console.error("Failed to add category:", error);
+      }
+    },
+
+    async editCategory({ commit, state }, category) {
+      try {
+        await axios.put(`/categories/update/${category.id}`, category);
+
+        // Update the state with the newly edited category
+        commit(
+          "setCategories",
+          state.categories.map((categ) =>
+            categ.id === category.id ? category : categ
+          )
+        );
+      } catch (error) {
+        console.error("Failed to edit category:", error);
+      }
+    },
+
+    async deleteCategory({ commit, state }, categoryId) {
+      try {
+        await axios.delete(`/categories/delete/${categoryId}`);
+
+        // Update the state with the newly deleted category
+        commit(
+          "setCategories",
+          state.categories.filter((category) => category.id !== categoryId)
+        );
+      } catch (error) {
+        console.error("Failed to delete category:", error);
       }
     },
   },
@@ -99,5 +174,7 @@ export default createStore({
     isAdmin: (state) => state.role_id === 1,
     isAuthenticated: (state) => state.token,
     getCategories: (state) => state.categories,
+    isEditModalOpen: (state) => state.editModalState,
+    getSelectedCategory: (state) => state.selectedCategory,
   },
 });
