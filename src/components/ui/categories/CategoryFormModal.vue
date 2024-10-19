@@ -49,11 +49,10 @@ export default {
     const currentCategory = computed(
       () => store.getters.getCategoryModal.category
     );
-    const userId = computed(() => store.getters.isAuthenticated.user_id);
 
     // Modal triggers
-    function openModal(payload) {
-      store.dispatch("openCategoryModal", payload);
+    function openModal(modalState) {
+      store.dispatch("openCategoryModal", modalState);
     }
 
     function closeModal() {
@@ -62,16 +61,12 @@ export default {
 
     async function submitForm() {
       try {
-        if (modalMode.value === "add") {
-          const newCategory = {
-            ...currentCategory.value,
-            user_id: userId.value,
-          };
-          await store.dispatch("addCategory", newCategory);
-        } else {
-          const editedCategory = { ...currentCategory.value };
-          await store.dispatch("editCategory", editedCategory);
-        }
+        const category = { ...currentCategory.value };
+        const actionMode =
+          modalMode.value === "add" ? "addCategory" : "editCategory";
+
+        // Call the appropriate action based on the modal mode
+        await store.dispatch(actionMode, category);
 
         closeModal();
       } catch (error) {

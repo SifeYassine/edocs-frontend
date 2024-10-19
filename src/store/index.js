@@ -18,8 +18,8 @@ export default createStore({
     },
 
     searchQuery: "",
-
     categories: [],
+    documents: [],
   },
   mutations: {
     // Setters
@@ -30,6 +30,12 @@ export default createStore({
       state.tokenIds.role_id = role_id;
     },
 
+    setCategoryModal(state, { isOpen, mode, category }) {
+      state.categoryModal.isOpen = isOpen;
+      state.categoryModal.mode = mode;
+      state.categoryModal.category = category;
+    },
+
     setSearchQuery(state, query) {
       state.searchQuery = query;
     },
@@ -38,10 +44,8 @@ export default createStore({
       state.categories = categories;
     },
 
-    setCategoryModal(state, { isOpen, mode, category }) {
-      state.categoryModal.isOpen = isOpen;
-      state.categoryModal.mode = mode;
-      state.categoryModal.category = category;
+    setDocuments(state, documents) {
+      state.documents = documents;
     },
 
     // Clear
@@ -182,6 +186,17 @@ export default createStore({
         console.error("Failed to delete category:", error);
       }
     },
+
+    // Documents CRUD
+    async fetchDocuments({ commit }) {
+      try {
+        const { data } = await axios.get("/documents/index");
+
+        commit("setDocuments", data.documents);
+      } catch (error) {
+        console.error("Failed to fetch documents:", error);
+      }
+    },
   },
 
   // Getters
@@ -189,6 +204,7 @@ export default createStore({
     isAuthenticated: (state) => state.tokenIds,
     isAdmin: (state) => state.tokenIds.role_id === 1,
     getCategories: (state) => state.categories,
+    getDocuments: (state) => state.documents,
     getCategoryModal: (state) => state.categoryModal,
     getSearchQuery: (state) => state.searchQuery,
   },

@@ -2,21 +2,21 @@
   <vs-navbar v-model="active" center-collapsed class="navbar">
     <template #left>
       <div class="p-[10px]">
-        <img src="@/assets/logos/logo.png" class="h-[70px]" alt="Logo" />
+        <img src="images/logo.png" class="h-[70px]" alt="Logo" />
       </div>
     </template>
 
     <vs-navbar-item id="guide" :active="active === 'guide'">
       <a href="#guide">How it works</a>
     </vs-navbar-item>
-    <vs-navbar-item id="features" :active="active === 'features'">
-      <a href="#features">Features</a>
+    <vs-navbar-item id="formats" :active="active === 'formats'">
+      <a href="#formats">Supported Formats</a>
     </vs-navbar-item>
 
     <!-- login, register and logout buttons -->
     <template #right>
       <vs-button v-if="isAuthenticated">
-        <router-link to="/categories" class="text-white"> Explore </router-link>
+        <router-link to="/my_docs" class="text-white"> Explore </router-link>
       </vs-button>
       <vs-button type="flat" v-if="!isAuthenticated">
         <router-link to="/login" class="text-white"> Login </router-link>

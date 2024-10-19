@@ -18,7 +18,7 @@
       </div>
       <div class="right p-5">
         <img
-          src="@/assets/images/hero.png"
+          src="images/hero.png"
           alt="Hero Image"
           class="hero-image w-[100%] rounded-xl"
         />
@@ -27,26 +27,26 @@
 
     <h1 class="text-5xl text-gray-900 font-bold mb-6">Supported Formats</h1>
     <section
-      id="features"
+      id="formats"
       class="w-[70%] mx-auto rounded-2xl p-5 grid gap-10 lg:grid-cols-3"
     >
       <article class="flex flex-col items-center">
-        <img src="@/assets/images/pdf.png" alt="" class="w-[100px]" />
+        <img src="images/pdf.png" alt="" class="w-[100px]" />
         <h1 class="text-2xl text-gray-900 ml-5">PDF</h1>
       </article>
 
       <article class="flex flex-col items-center">
-        <img src="@/assets/images/docx.png" alt="" class="w-[100px]" />
+        <img src="images/docx.png" alt="" class="w-[100px]" />
         <h1 class="text-2xl text-gray-900 ml-5">DOCX</h1>
       </article>
 
       <article class="flex flex-col items-center">
-        <img src="@/assets/images/xlsx.png" alt="" class="w-[100px]" />
+        <img src="images/xlsx.png" alt="" class="w-[100px]" />
         <h1 class="text-2xl text-gray-900 ml-5">XLSX</h1>
       </article>
 
       <article class="flex flex-col items-center">
-        <img src="@/assets/images/pptx.png" alt="" class="w-[100px]" />
+        <img src="images/pptx.png" alt="" class="w-[100px]" />
         <h1 class="text-2xl text-gray-900 ml-5">PPTX</h1>
       </article>
     </section>
@@ -59,7 +59,7 @@
       <div class="w-[90%] flex gap-5 items-center right text-left py-0">
         <div class="left p-5">
           <img
-            src="@/assets/images/hero.png"
+            src="images/hero.png"
             alt="Hero Image"
             class="hero-image w-[400px] rounded-xl"
           />
@@ -106,7 +106,7 @@
         </div>
         <div class="left p-5">
           <img
-            src="@/assets/images/hero.png"
+            src="images/hero.png"
             alt="Hero Image"
             class="hero-image w-[400px] rounded-xl"
           />

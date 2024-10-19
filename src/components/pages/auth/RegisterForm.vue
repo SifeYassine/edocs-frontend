@@ -19,7 +19,7 @@
       class="form bg-white p-5 pb-8 rounded-[20px] w-full max-w-md"
     >
       <div class="logo flex flex-col items-center">
-        <img src="@/assets/logos/logo.png" class="w-[250px]" alt="Logo" />
+        <img src="images/logo.png" class="w-[250px]" alt="Logo" />
         <h1 class="text-3xl text-gray-700 font-[500] mt-3 mb-6">Register</h1>
         <p class="text-gray-700 text-base">
           Welcom to eDocs, Start by creating an account

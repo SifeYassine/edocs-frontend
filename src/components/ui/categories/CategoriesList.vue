@@ -28,7 +28,7 @@
           }"
         >
           <div
-            @click="openEditModal(category)"
+            @click="openEditModal({ mode: 'edit', category: category })"
             class="context-menu-item edit-item"
           >
             Edit
@@ -69,11 +69,8 @@ export default {
     });
 
     // Edit Modal trigger
-    function openEditModal(category) {
-      store.dispatch("openCategoryModal", {
-        mode: "edit",
-        category,
-      });
+    function openEditModal(modalState) {
+      store.dispatch("openCategoryModal", modalState);
     }
 
     async function fetchCategories() {

@@ -13,7 +13,7 @@
       class="form bg-white p-5 pb-8 rounded-[20px] w-full max-w-md"
     >
       <div class="logo flex flex-col items-center">
-        <img src="@/assets/logos/logo.png" class="w-[250px]" alt="Logo" />
+        <img src="images/logo.png" class="w-[250px]" alt="Logo" />
         <h1 class="text-3xl text-gray-700 font-[500] mt-3 mb-6">Login</h1>
         <p class="text-gray-700 text-base">
           Welcome back! Please log in to your account.
@@ -94,7 +94,7 @@ export default {
       try {
         await store.dispatch("login", userCredentials.value);
 
-        router.push("/");
+        router.push("/my_docs");
       } catch (error) {
         console.error(error);
         // Handle login failure (Wrong credentials)

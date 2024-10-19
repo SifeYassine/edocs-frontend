@@ -8,7 +8,7 @@
         Home
       </vs-sidebar-item>
 
-      <vs-sidebar-item id="mydocs" to="/my_docs">
+      <vs-sidebar-item id="my_docs" to="/my_docs">
         <template #icon>
           <i class="bx bx-file-blank" />
         </template>
@@ -39,7 +39,7 @@ import { useRoute, useRouter } from "vue-router";
 
 export default {
   setup() {
-    const active = ref("my_docs");
+    const active = ref("mydocs");
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
