@@ -24,7 +24,7 @@
 
       <vs-sidebar-item @click="logout" class="logout">
         <template #icon>
-          <i class="bx bx-power-off" />
+          <i class="bx bx-log-out" />
         </template>
         Logout
       </vs-sidebar-item>

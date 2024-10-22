@@ -1,4 +1,3 @@
-<!-- Updated Categories.vue -->
 <template>
   <div>
     <SideBar />

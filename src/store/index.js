@@ -20,6 +20,7 @@ export default createStore({
     searchQuery: "",
     categories: [],
     documents: [],
+    selectedDocument: null,
   },
   mutations: {
     // Setters
@@ -46,6 +47,10 @@ export default createStore({
 
     setDocuments(state, documents) {
       state.documents = documents;
+    },
+
+    setSelectedDocument(state, document) {
+      state.selectedDocument = document;
     },
 
     // Clear
@@ -197,6 +202,39 @@ export default createStore({
         console.error("Failed to fetch documents:", error);
       }
     },
+
+    async addDocument({ commit, state }, document) {
+      try {
+        // Create a FormData object from the document object
+        const formData = new FormData();
+
+        // Loop through the document object to append all fields to FormData
+        for (const key in document) {
+          // If the document does not have a category id, skip it
+          if (key === "category_id" && !document[key]) {
+            continue;
+          }
+          formData.append(key, document[key]);
+        }
+
+        //Make the API request with the FormData object
+        const { data } = await axios.post("/documents/create", formData);
+
+        // Add the newly created document to the state by appending it to the existing documents
+        commit("setDocuments", [...state.documents, data.document]);
+      } catch (error) {
+        console.error("Failed to add document:", error);
+      }
+    },
+
+    getDocumentById({ commit, state }, id) {
+      // Find the document with the matching id in documents array, then set the found document to the state
+      const selectedDocument = state.documents.find(
+        (document) => document.id === id
+      );
+
+      commit("setSelectedDocument", selectedDocument);
+    },
   },
 
   // Getters
@@ -205,6 +243,7 @@ export default createStore({
     isAdmin: (state) => state.tokenIds.role_id === 1,
     getCategories: (state) => state.categories,
     getDocuments: (state) => state.documents,
+    getSelectedDocument: (state) => state.selectedDocument,
     getCategoryModal: (state) => state.categoryModal,
     getSearchQuery: (state) => state.searchQuery,
   },

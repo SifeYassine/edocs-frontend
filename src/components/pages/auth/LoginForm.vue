@@ -6,7 +6,7 @@
       color="danger"
       class="alert"
     >
-      <template #title> Wrong Username or/and Password </template>
+      <template #title> {{ alertMessage }} </template>
     </vs-alert>
     <form
       @submit.prevent="submitForm"
@@ -78,6 +78,7 @@ export default {
     const active = ref(false);
     const time = ref(2000);
     const progress = ref(0);
+    const alertMessage = ref([]);
 
     // User credentials for login
     const userCredentials = ref({
@@ -100,7 +101,7 @@ export default {
         // Handle login failure (Wrong credentials)
         if (error.status === 400) {
           active.value = true; // Activate alert
-          console.error("Login failed:", error.data.message);
+          alertMessage.value = error.data.message;
         }
       }
     }
@@ -126,6 +127,7 @@ export default {
       hasVisiblePassword,
       active,
       progress,
+      alertMessage,
     };
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer w-[90%] bg-[#345BFF] mx-auto my-10 rounded-2xl p-10">
+  <footer class="footer w-[85%] bg-[#345BFF] mx-auto my-10 rounded-2xl p-10">
     <div
       class="flex flex-col-reverse justify-between gap-5 lg:flex-row lg:gap-0"
     >

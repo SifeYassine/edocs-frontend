@@ -2,7 +2,7 @@
   <div class="ml-6 mb-6">
     <vs-input
       v-model="query"
-      @keyup.enter="search"
+      @input="debouncedSearch"
       type="text"
       color="primary"
       label="Search..."
@@ -24,14 +24,21 @@ export default {
   setup() {
     const store = useStore();
     const query = ref("");
+    let debounceTimer = null;
 
-    function search() {
-      store.dispatch("searchQuery", query.value);
+    function debouncedSearch() {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+
+      debounceTimer = setTimeout(() => {
+        store.dispatch("searchQuery", query.value);
+      }, 300);
     }
 
     return {
       query,
-      search,
+      debouncedSearch,
     };
   },
 };
