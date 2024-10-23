@@ -235,6 +235,37 @@ export default createStore({
 
       commit("setSelectedDocument", selectedDocument);
     },
+
+    async editDocument({ commit, state }, document) {
+      try {
+        await axios.put(`/documents/update/${document.id}`, document);
+
+        // Update the state with the edited document by replacing the matching document in the array
+        const editedDocuments = state.documents.map((doc) =>
+          // Replace the document whose Id matches with the updated document, otherwise keep the existing document
+          doc.id === document.id ? document : doc
+        );
+        commit("setDocuments", editedDocuments);
+      } catch (error) {
+        console.error("Failed to edit document:", error);
+      }
+    },
+
+    async deleteDocument({ commit, state }, id) {
+      try {
+        await axios.delete(`/documents/delete/${id}`);
+
+        // Remove the deleted document from the state by filtering it out
+        const deletedDocuments = state.documents.filter(
+          (document) =>
+            // Only keep documents whose Ids don't match the deleted document Id
+            document.id !== id
+        );
+        commit("setDocuments", deletedDocuments);
+      } catch (error) {
+        console.error("Failed to delete document:", error);
+      }
+    },
   },
 
   // Getters

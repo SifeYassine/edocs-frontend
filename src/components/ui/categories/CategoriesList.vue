@@ -7,7 +7,7 @@
       <li
         v-for="category in filteredCategories"
         :key="category.id"
-        class="font-bold p-1.5 relative"
+        class="font-bold p-1.5"
       >
         <div @contextmenu.prevent="showContextMenu($event, category)">
           <vs-button
@@ -19,6 +19,8 @@
             <p class="text-[15px] ml-[5px]">{{ category.name }}</p>
           </vs-button>
         </div>
+
+        <!-- Context Menu -->
         <div
           v-if="contextMenu.visible && contextMenu.categoryId === category.id"
           class="context-menu"
@@ -128,10 +130,11 @@ export default {
       }
     }
 
+    document.addEventListener("click", hideContextMenu);
+
     onMounted(() => {
       getMyProfile();
       fetchCategories();
-      document.addEventListener("click", hideContextMenu);
     });
 
     return {

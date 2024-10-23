@@ -64,17 +64,13 @@
 export default {
   name: "PreviewSelectedDocument",
   props: {
-    active: {
-      type: Boolean,
-    },
     document: {
       type: Object,
     },
   },
 
   setup() {
-    const baseUrl =
-      "https://rx-montgomery-tales-satisfactory.trycloudflare.com";
+    const baseUrl = "https://char-zu-invision-end.trycloudflare.com";
 
     const msViewerUrl = "https://view.officeapps.live.com/op/embed.aspx?src=";
     const googleViewerUrl = "https://docs.google.com/viewer?url=";
