@@ -21,7 +21,9 @@
               {{ user.email }}
             </vs-td>
 
-            <vs-td class="flex">
+            <vs-td v-if="user.role_id.name === 'Admin'" class="flex"> </vs-td>
+
+            <vs-td v-else class="flex">
               <vs-button color="primary">Assign</vs-button>
 
               <vs-button color="danger">Revoke</vs-button>
@@ -43,7 +45,8 @@
               </vs-button>
             </vs-td>
 
-            <vs-td class="flex">
+            <vs-td v-if="user.role_id.name === 'Admin'" class="flex"> </vs-td>
+            <vs-td v-else class="flex">
               <vs-button color="primary" @click="openEditModal({ user: user })"
                 >Edit</vs-button
               >
