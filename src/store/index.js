@@ -7,7 +7,20 @@ export default createStore({
     categoryModal: {
       isOpen: false,
       mode: null, // 'add' or 'edit'
-      category: { name: "" }, // empty category
+      category: null, // empty category
+    },
+
+    // Role modal state
+    roleModal: {
+      isOpen: false,
+      mode: null, // 'add' or 'edit'
+      role: null, // empty role
+    },
+
+    // User modal state
+    userModal: {
+      isOpen: false,
+      user: null,
     },
 
     // Authentication (token & Ids) state
@@ -21,6 +34,9 @@ export default createStore({
     categories: [],
     documents: [],
     selectedDocument: null,
+    userPermissions: [],
+    roles: [],
+    users: [],
   },
   mutations: {
     // Setters
@@ -35,6 +51,17 @@ export default createStore({
       state.categoryModal.isOpen = isOpen;
       state.categoryModal.mode = mode;
       state.categoryModal.category = category;
+    },
+
+    setRoleModal(state, { isOpen, mode, role }) {
+      state.roleModal.isOpen = isOpen;
+      state.roleModal.mode = mode;
+      state.roleModal.role = role;
+    },
+
+    setUserModal(state, { isOpen, user }) {
+      state.userModal.isOpen = isOpen;
+      state.userModal.user = user;
     },
 
     setSearchQuery(state, query) {
@@ -53,6 +80,18 @@ export default createStore({
       state.selectedDocument = document;
     },
 
+    setUserPermissions(state, userPermissions) {
+      state.userPermissions = userPermissions;
+    },
+
+    setRoles(state, roles) {
+      state.roles = roles;
+    },
+
+    setUsers(state, users) {
+      state.users = users;
+    },
+
     // Clear
     clearTokenIds(state) {
       state.tokenIds.token = "";
@@ -63,6 +102,26 @@ export default createStore({
 
     clearCategories(state) {
       state.categories = [];
+    },
+
+    clearDocuments(state) {
+      state.documents = [];
+    },
+
+    clearSelectedDocument(state) {
+      state.selectedDocument = null;
+    },
+
+    clearUserPermissions(state) {
+      state.userPermissions = [];
+    },
+
+    clearRoles(state) {
+      state.roles = [];
+    },
+
+    clearUsers(state) {
+      state.users = [];
     },
   },
   actions: {
@@ -111,11 +170,31 @@ export default createStore({
       }
     },
 
+    async getUserPermissions({ commit }, userId) {
+      try {
+        const { data } = await axios.get(`/users/${userId}/permissions/index`);
+
+        // Extract the labels from the user permissions array
+        const permissionLabels = data.permissions.map(
+          (permission) => permission.label
+        );
+
+        commit("setUserPermissions", permissionLabels);
+      } catch (error) {
+        console.error("Failed to get user permissions:", error);
+      }
+    },
+
     async logout({ commit }) {
       await axios.post("/auth/logout");
 
       commit("clearTokenIds");
       commit("clearCategories");
+      commit("clearDocuments");
+      commit("clearSelectedDocument");
+      commit("clearUserPermissions");
+      commit("clearRoles");
+      commit("clearUsers");
     },
 
     searchQuery({ commit }, query) {
@@ -135,7 +214,39 @@ export default createStore({
       commit("setCategoryModal", {
         isOpen: false,
         mode: null,
-        category: { name: "" },
+        category: null,
+      });
+    },
+
+    // Role modal state triggers
+    openRoleModal({ commit }, { mode, role }) {
+      commit("setRoleModal", {
+        isOpen: true,
+        mode,
+        role: role || { name: "", description: "" }, // empty role for 'add' mode
+      });
+    },
+
+    closeRoleModal({ commit }) {
+      commit("setRoleModal", {
+        isOpen: false,
+        mode: null,
+        role: null,
+      });
+    },
+
+    // User modal state triggers
+    openUserModal({ commit }, { user }) {
+      commit("setUserModal", {
+        isOpen: true,
+        user: user,
+      });
+    },
+
+    closeUserModal({ commit }) {
+      commit("setUserModal", {
+        isOpen: false,
+        user: null,
       });
     },
 
@@ -266,6 +377,100 @@ export default createStore({
         console.error("Failed to delete document:", error);
       }
     },
+
+    // Roles CRUD
+    async fetchRoles({ commit }) {
+      try {
+        const { data } = await axios.get("/roles/index");
+
+        commit("setRoles", data.roles);
+      } catch (error) {
+        console.error("Failed to fetch roles:", error);
+      }
+    },
+
+    async addRole({ commit, state }, role) {
+      try {
+        const { data } = await axios.post("/roles/create", role);
+
+        commit("setRoles", [...state.roles, data.role]);
+      } catch (error) {
+        console.error("Failed to add role:", error);
+      }
+    },
+
+    async editRole({ commit, state }, role) {
+      try {
+        await axios.put(`/roles/update/${role.id}`, role);
+
+        // Update the state with the edited role by replacing the matching role in the array
+        const editedRoles = state.roles.map((rle) =>
+          // Replace the role whose Id matches with the updated role, otherwise keep the existing role
+          rle.id === role.id ? role : rle
+        );
+        commit("setRoles", editedRoles);
+      } catch (error) {
+        console.error("Failed to edit role:", error);
+      }
+    },
+
+    async deleteRole({ commit, state }, id) {
+      try {
+        await axios.delete(`/roles/delete/${id}`);
+
+        // Remove the deleted role from the state by filtering it out
+        const deletedRoles = state.roles.filter(
+          (role) =>
+            // Only keep roles whose Ids don't match the deleted role Id
+            role.id !== id
+        );
+        commit("setRoles", deletedRoles);
+      } catch (error) {
+        console.error("Failed to delete role:", error);
+      }
+    },
+
+    // Users CRUD
+    async fetchUsers({ commit }) {
+      try {
+        const { data } = await axios.get("/users/index");
+
+        commit("setUsers", data.users);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    },
+
+    async editUser({ commit, state }, user) {
+      try {
+        await axios.put(`/users/update/${user.id}`, user);
+
+        // Update the state with the edited user by replacing the matching user in the array
+        const editedUsers = state.users.map((usr) =>
+          // Replace the user whose Id matches with the updated user, otherwise keep the existing user
+          usr.id === user.id ? user : usr
+        );
+        commit("setUsers", editedUsers);
+      } catch (error) {
+        console.error("Failed to edit user:", error);
+      }
+    },
+
+    async deleteUser({ commit, state }, id) {
+      try {
+        await axios.delete(`/users/delete/${id}`);
+
+        // Remove the deleted user from the state by filtering it out
+        const deletedUsers = state.users.filter(
+          (user) =>
+            // Only keep users whose Ids don't match the deleted user Id
+            user.id !== id
+        );
+        commit("setUsers", deletedUsers);
+      } catch (error) {
+        console.error("Failed to delete user:", error);
+      }
+    },
   },
 
   // Getters
@@ -276,6 +481,11 @@ export default createStore({
     getDocuments: (state) => state.documents,
     getSelectedDocument: (state) => state.selectedDocument,
     getCategoryModal: (state) => state.categoryModal,
+    getRoleModal: (state) => state.roleModal,
+    getUserModal: (state) => state.userModal,
     getSearchQuery: (state) => state.searchQuery,
+    getUserPermissions: (state) => state.userPermissions,
+    getRoles: (state) => state.roles,
+    getUsers: (state) => state.users,
   },
 });

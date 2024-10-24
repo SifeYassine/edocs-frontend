@@ -62,6 +62,17 @@
           >
             Delete
           </div>
+
+          <div class="context-menu-item download-item">
+            <a
+              :href="`${baseUrl}${document.path_url}`"
+              :download="document.title"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Download
+            </a>
+          </div>
         </div>
       </li>
     </ul>
@@ -86,6 +97,8 @@ export default {
 
     const previewActive = ref(false);
     const editActive = ref(false);
+
+    const baseUrl = "http://127.0.0.1:8000";
 
     const documents = computed(() => store.getters.getDocuments);
     const selectedDocument = computed(() => store.getters.getSelectedDocument);
@@ -120,14 +133,22 @@ export default {
       const searchFilter = searchQuery.value.toLowerCase();
       const categoryFilter = categoryName.value.toLowerCase();
 
+      // If no filters are applied, return all documents
       if (!searchFilter && !categoryFilter) {
         return documents.value;
       }
 
       return documents.value.filter((document) => {
+        const documentTitle = document.title
+          ? document.title.toLowerCase()
+          : "";
+        const categoryName = document.category_id?.name
+          ? document.category_id.name.toLowerCase()
+          : "";
+
         return (
-          document.title.toLowerCase().includes(searchFilter) &&
-          document.category_id.name.toLowerCase().includes(categoryFilter)
+          documentTitle.includes(searchFilter) &&
+          categoryName.includes(categoryFilter)
         );
       });
     });
@@ -180,6 +201,7 @@ export default {
       hideContextMenu,
       openEditModal,
       documentToEdit,
+      baseUrl,
     };
   },
 };
@@ -209,25 +231,28 @@ img {
   cursor: pointer;
 }
 
-/* Specific Styling for the Delete Item */
-.delete-item {
+.delete-item,
+.edit-item,
+.download-item {
   margin: 5px 10px;
   padding: 10px 15px;
 }
 
+/* Specific Styling for the Delete Item */
 .delete-item:hover {
   color: white;
   background-color: #fe4646;
 }
 
 /* Specific Styling for the Edit Item */
-.edit-item {
-  margin: 5px 10px;
-  padding: 10px 15px;
-}
-
 .edit-item:hover {
   color: white;
   background-color: #3881ff;
+}
+
+/* Specific Styling for the Download Item */
+.download-item:hover {
+  color: white;
+  background-color: #48c78e;
 }
 </style>
