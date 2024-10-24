@@ -17,6 +17,13 @@ export default createStore({
       role: null, // empty role
     },
 
+    // Permission modal state
+    permissionModal: {
+      isOpen: false,
+      mode: null, // 'add' or 'edit'
+      permission: null, // empty permission
+    },
+
     // User modal state
     userModal: {
       isOpen: false,
@@ -36,6 +43,7 @@ export default createStore({
     selectedDocument: null,
     userPermissions: [],
     roles: [],
+    permissions: [],
     users: [],
   },
   mutations: {
@@ -57,6 +65,12 @@ export default createStore({
       state.roleModal.isOpen = isOpen;
       state.roleModal.mode = mode;
       state.roleModal.role = role;
+    },
+
+    setPermissionModal(state, { isOpen, mode, permission }) {
+      state.permissionModal.isOpen = isOpen;
+      state.permissionModal.mode = mode;
+      state.permissionModal.permission = permission;
     },
 
     setUserModal(state, { isOpen, user }) {
@@ -86,6 +100,10 @@ export default createStore({
 
     setRoles(state, roles) {
       state.roles = roles;
+    },
+
+    setPermissions(state, permissions) {
+      state.permissions = permissions;
     },
 
     setUsers(state, users) {
@@ -118,6 +136,10 @@ export default createStore({
 
     clearRoles(state) {
       state.roles = [];
+    },
+
+    clearPermissions(state) {
+      state.permissions = [];
     },
 
     clearUsers(state) {
@@ -232,6 +254,23 @@ export default createStore({
         isOpen: false,
         mode: null,
         role: null,
+      });
+    },
+
+    // Permission modal state triggers
+    openPermissionModal({ commit }, { mode, permission }) {
+      commit("setPermissionModal", {
+        isOpen: true,
+        mode,
+        permission: permission || { label: "", description: "" }, // empty permission for 'add' mode
+      });
+    },
+
+    closePermissionModal({ commit }) {
+      commit("setPermissionModal", {
+        isOpen: false,
+        mode: null,
+        permission: null,
       });
     },
 
@@ -471,6 +510,58 @@ export default createStore({
         console.error("Failed to delete user:", error);
       }
     },
+
+    // Permissions CRUD
+    async fetchPermissions({ commit }) {
+      try {
+        const { data } = await axios.get("/permissions/index");
+
+        commit("setPermissions", data.permissions);
+      } catch (error) {
+        console.error("Failed to fetch permissions:", error);
+      }
+    },
+
+    async addPermission({ commit, state }, permission) {
+      try {
+        const { data } = await axios.post("/permissions/create", permission);
+
+        commit("setPermissions", [...state.permissions, data.permission]);
+      } catch (error) {
+        console.error("Failed to add permission:", error);
+      }
+    },
+
+    async editPermission({ commit, state }, permission) {
+      try {
+        await axios.put(`/permissions/update/${permission.id}`, permission);
+
+        // Update the state with the edited permission by replacing the matching permission in the array
+        const editedPermissions = state.permissions.map((prmssn) =>
+          // Replace the permission whose Id matches with the updated permission, otherwise keep the existing permission
+          prmssn.id === permission.id ? permission : prmssn
+        );
+        commit("setPermissions", editedPermissions);
+      } catch (error) {
+        console.error("Failed to edit permission:", error);
+      }
+    },
+
+    async deletePermission({ commit, state }, id) {
+      try {
+        await axios.delete(`/permissions/delete/${id}`);
+
+        // Remove the deleted permission from the state by filtering it out
+        const deletedPermissions = state.permissions.filter(
+          (permission) =>
+            // Only keep permissions whose Ids don't match the deleted permission Id
+            permission.id !== id
+        );
+        commit("setPermissions", deletedPermissions);
+      } catch (error) {
+        console.error("Failed to delete permission:", error);
+      }
+    },
   },
 
   // Getters
@@ -482,10 +573,12 @@ export default createStore({
     getSelectedDocument: (state) => state.selectedDocument,
     getCategoryModal: (state) => state.categoryModal,
     getRoleModal: (state) => state.roleModal,
+    getPermissionModal: (state) => state.permissionModal,
     getUserModal: (state) => state.userModal,
     getSearchQuery: (state) => state.searchQuery,
     getUserPermissions: (state) => state.userPermissions,
     getRoles: (state) => state.roles,
+    getPermissions: (state) => state.permissions,
     getUsers: (state) => state.users,
   },
 });

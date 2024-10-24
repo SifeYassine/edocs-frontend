@@ -78,7 +78,6 @@ export default {
     async function deleteRole(roleId) {
       try {
         await store.dispatch("deleteRole", roleId);
-        fetchRoles();
       } catch (error) {
         console.error("Failed to delete role:", error);
       }
@@ -86,9 +85,6 @@ export default {
 
     onMounted(() => {
       fetchRoles();
-      setTimeout(() => {
-        console.log("fetched roles", roles.value);
-      }, 3000);
     });
 
     return {

@@ -33,12 +33,15 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const needsAuthPages = ["/my_docs", "/categories"];
-  const needsPermissionsPages = ["/users", "/roles", "/permissions"];
+  const needsAuthPages = [
+    "/my_docs",
+    "/categories",
+    "/users",
+    "/roles",
+    "/permissions",
+  ];
 
   const isAuthenticated = store.getters.isAuthenticated.token;
-  const isAdmin = store.getters.isAdmin;
-  const hasPermissions = store.getters.getUserPermissions;
 
   // If route is not found (doesn't exist), go to not found page
   if (to.name === "NotFound") {
@@ -49,15 +52,6 @@ router.beforeEach((to, from, next) => {
   if (needsAuthPages.includes(to.path) && !isAuthenticated) {
     return next("/register");
   }
-
-  // If the route requires permissions and user is not an admin and has no permissions, redirect to /NotFound
-  // if (
-  //   needsPermissionsPages.includes(to.path) &&
-  //   !isAdmin &&
-  //   hasPermissions.length === 0
-  // ) {
-  //   return next("/NotFound");
-  // }
 
   // Otherwise, proceed to the route
   next();
