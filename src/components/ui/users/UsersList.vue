@@ -1,12 +1,13 @@
 <template>
   <div>
     <EditUserFormModal />
-    <div class="table w-[50%] ml-[30%] mt-[5%]">
+    <div class="table w-[60%] ml-[30%] mt-[5%]">
       <vs-table striped>
         <template #thead>
           <vs-tr>
             <vs-th class="font-bold"> Usernames </vs-th>
             <vs-th class="font-bold"> Emails </vs-th>
+            <vs-th class="font-bold"> Permissions </vs-th>
             <vs-th class="font-bold"> Roles </vs-th>
             <vs-th class="font-bold"> Actions </vs-th>
           </vs-tr>
@@ -18,6 +19,12 @@
             </vs-td>
             <vs-td>
               {{ user.email }}
+            </vs-td>
+
+            <vs-td class="flex">
+              <vs-button color="primary">Assign</vs-button>
+
+              <vs-button color="danger">Revoke</vs-button>
             </vs-td>
 
             <vs-td>
