@@ -70,8 +70,7 @@ export default {
   },
 
   setup() {
-    // const baseUrl = "https://char-zu-invision-end.trycloudflare.com";
-    const baseUrl = "http://127.0.0.1:8000";
+    const baseUrl = process.env.VUE_APP_API_BASE_URL;
 
     const msViewerUrl = "https://view.officeapps.live.com/op/embed.aspx?src=";
     const googleViewerUrl = "https://docs.google.com/viewer?url=";
